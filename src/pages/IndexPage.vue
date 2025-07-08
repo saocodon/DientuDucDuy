@@ -1,43 +1,45 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
-      title="Example component"
-      active
-      :todos="todos"
-      :meta="meta"
-    ></example-component>
+  <q-page class="q-pa-md">
+    <div class="row q-col-gutter-md q-mb-md">
+      <div class="col-12">
+        <q-input v-model="search" placeholder="Search products..." />
+      </div>
+    </div>
+    <div class="row q-col-gutter-md">
+      <div v-for="p in products" :key="p.id" class="col-xs-12 col-sm-6 col-md-2 col-lg-3">
+        <q-card class="q-hoverable">
+          <q-img :src="p.imageUrl" :alt="p.name" style="height: 200px" />
+          <q-card-section>
+            <div class="text-h6">{{ p.name }}</div>
+            <div class="text-subtitle2">{{ p.price.toLocaleString() }} đ</div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Todo, Meta } from 'components/models';
-import ExampleComponent from 'components/ExampleComponent.vue';
+import { onMounted, ref } from 'vue';
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
-const todos = ref<Todo[]>([
-  {
-    id: 1,
-    content: 'ct1'
-  },
-  {
-    id: 2,
-    content: 'ct2'
-  },
-  {
-    id: 3,
-    content: 'ct3'
-  },
-  {
-    id: 4,
-    content: 'ct4'
-  },
-  {
-    id: 5,
-    content: 'ct5'
-  }
-]);
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl: string;
+}
 
-const meta = ref<Meta>({
-  totalCount: 1200
+const products = ref<Product[]>([]);
+
+onMounted(async () => {
+  const querySnapshot = await getDocs(collection(db, 'products'));
+  products.value = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...(doc.data() as Omit<Product, 'id'>),
+  }));
 });
+
+const search = ref('');
 </script>

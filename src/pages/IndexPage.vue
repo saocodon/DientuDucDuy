@@ -34,7 +34,7 @@ interface Product {
 const products = ref<Product[]>([]);
 
 onMounted(async () => {
-  const querySnapshot = await getDocs(collection(db, 'products'));
+  const querySnapshot = await getDocs(collection(db, 'Products'));
   products.value = querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...(doc.data() as Omit<Product, 'id'>),

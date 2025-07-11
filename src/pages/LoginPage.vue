@@ -16,9 +16,11 @@ import { useQuasar } from 'quasar';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/user';
 
 const router = useRouter();
 const $q = useQuasar();
+const userStore = useUserStore();
 
 const email = ref('');
 const password = ref('');
@@ -30,7 +32,8 @@ async function handleLogin() {
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
 
     const user = userCredential.user;
-    $q.notify({ type: 'positive', message: `Chào ${user.email}` });
+    userStore.setUser(user);
+    $q.notify({ type: 'positive', message: `Chào mừng ${user.email}` });
     await nextTick();
     await router.push('/');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

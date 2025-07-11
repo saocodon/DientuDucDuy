@@ -30,3 +30,7 @@ export default defineStore((/* { ssrContext } */) => {
 
   return pinia
 })
+
+export * from './user';
+
+export * from './cart';
